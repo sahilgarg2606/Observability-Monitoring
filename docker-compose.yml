@@ -9,6 +9,7 @@ services:
         - "${PROMETHEUS_PORT}:9090"
      volumes:
         - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
         - prometheus-data:/prometheus
      command:
         - '--config.file=/etc/prometheus/prometheus.yml'
@@ -69,10 +70,50 @@ services:
       - "--config.file=/etc/blackbox_exporter/config.yml"
     networks:
       - monitoring
+   postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - monitoring
+   postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://admin:admin123@postgres:5432/observability?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - monitoring
+   alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    networks:
+      - monitoring
        
+
 networks:
   monitoring:
 
 volumes:
   grafana-data:
   prometheus-data:
+  postgres-data:

@@ -1,0 +1,15 @@
+  global:
+    smtp_smarthost: 'smtp.gmail.com:587'
+    smtp_from: 'flutterdevs9@gmail.com'
+    smtp_auth_username: 'flutterdevs9@gmail.com'
+    smtp_auth_password: 'abcdefghijklmnop'
+    smtp_require_tls: true
+
+  route:
+    receiver: gmail-alert
+
+  receivers:
+    - name: gmail-alert
+      email_configs:
+        - to: 'flutterdevs9@gmail.com'
+          send_resolved: true

@@ -1,9 +1,12 @@
 groups:
+# ==========================================
+# INFRASTRUCTURE ALERTS
+# ==========================================
 - name: Infrastructure Alerts - Tier 1
   rules:
   - alert: NodeDown
     expr: up{job="node-exporter"} == 0
-    for: 30s
+    for: 15s
     labels:
       severity: critical
       team: infra
@@ -11,10 +14,19 @@ groups:
     annotations:
       summary: "Node Exporter Down"
       description: "Host monitoring has stopped. Infra team notified."
-      
+  - alert: BlackboxExporterDown
+    expr: up{job="blackbox-exporter"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l1_developer
+    annotations:
+      summary: "Blackbox Exporter Down"
+      description: "Application monitoring exporter is unavailable." 
   - alert: PrometheusDown
     expr: up{job="prometheus"} == 0
-    for: 30s
+    for: 15s
     labels:
       severity: critical
       team: infra
@@ -25,7 +37,7 @@ groups:
 
   - alert: PostgreSQLExporterDown
     expr: up{job="postgres-exporter"} == 0
-    for: 30s
+    for: 15s
     labels:
       severity: critical
       team: dba
@@ -36,7 +48,7 @@ groups:
       
   - alert: CAdvisorDown
     expr: up{job="cadvisor"} == 0
-    for: 30s
+    for: 15s
     labels:
       severity: warning
       team: infra
@@ -44,7 +56,6 @@ groups:
     annotations:
       summary: "cAdvisor Down"
       description: "Container monitoring stopped."
-
   - alert: HighCPUUsage
     expr: (100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
     for: 2m
@@ -88,6 +99,7 @@ groups:
     annotations:
       summary: "High System Load"
       description: "System load average is high."
+ 
   - alert: ContainerDown
     expr: absent(container_last_seen{name!=""})
     for: 30s
@@ -118,6 +130,227 @@ groups:
     annotations:
       summary: "High Container Memory Usage"
       description: "Container memory usage exceeded 80%."
+ 
+- name: Infrastructure Alerts - Tier 2
+  rules:
+  - alert: NodeDown_Escalated
+    expr: up{job="node-exporter"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: Node Down for 3+ Hours"
+      description: "Host monitoring down for >3 hours. Escalating to Infra Lead."
+  - alert: BlackboxExporterDown_Escalated
+    expr: up{job="blackbox-exporter"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: Blackbox Exporter Down for 3+ Hours"
+      description: "Application monitoring exporter unavailable for >3 hours. Escalating to Backend Lead."
+
+  - alert: PrometheusDown_Escalated
+    expr: up{job="prometheus"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: Prometheus Down for 3+ Hours"
+      description: "Prometheus unreachable for >3 hours. Escalating to Infra Lead."
+      
+  - alert: PostgreSQLExporterDown_Escalated
+    expr: up{job="postgres-exporter"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      team: dba
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: Postgres Exporter Down for 3+ Hours"
+      description: "Database metrics unavailable for >3 hours. Escalating to DBA Lead."
+      
+  - alert: CAdvisorDown_Escalated
+    expr: up{job="cadvisor"} == 0
+    for: 1m
+    labels:
+      severity: warning
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: cAdvisor Down for 3+ Hours"
+      description: "Container monitoring down for >3 hours. Escalating to Infra Lead."
+  - alert: HighCPUUsage_Escalated
+    expr: (100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+    for: 15m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: High CPU Usage"
+      description: "CPU usage above 80% for 15 minutes."
+
+  - alert: HighMemoryUsage_Escalated
+    expr: ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100) > 80
+    for: 15m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: High Memory Usage"
+      description: "Memory utilization above 80% for 15 minutes."
+
+  - alert: HighDiskUsage_Escalated
+    expr: (100 - ((node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} * 100) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) > 85
+    for: 20m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l2_team_lead
+    annotations:
+      summary: "ESCALATION: High Disk Usage"
+      description: "Disk usage exceeded 85% for 20 minutes."
+  
+- name: Infrastructure Alerts - Tier 3
+  rules:
+  - alert: NodeDown_Manager
+    expr: up{job="node-exporter"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l3_manager
+    annotations:
+      summary: "L3 ESCALATION: Node Down for 6+ Hours"
+      description: "Host monitoring down for >6 hours. Escalating to Manager."
+  - alert: BlackboxExporterDown_Manager
+    expr: up{job="blackbox-exporter"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l3_manager
+    annotations:
+      summary: "L3 ESCALATION: Blackbox Exporter Down for 6+ Hours"
+      description: "Application monitoring exporter unavailable for >6 hours. Escalating to Manager."
+  - alert: PrometheusDown_Manager
+    expr: up{job="prometheus"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l3_manager
+    annotations:
+      summary: "L3 ESCALATION: Prometheus Down for 6+ Hours"
+      description: "Prometheus unreachable for >6 hours. Escalating to Manager."
+  - alert: PostgreSQLExporterDown_Manager
+    expr: up{job="postgres-exporter"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      team: dba
+      escalation_tier: l3_manager
+    annotations:
+      summary: "L3 ESCALATION: Postgres Exporter Down for 6+ Hours"
+      description: "Database metrics unavailable for >6 hours. Escalating to DBA Manager."
+  - alert: CAdvisorDown_Manager
+    expr: up{job="cadvisor"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l3_manager
+    annotations:
+      summary: "L3 ESCALATION: cAdvisor Down for 6+ Hours"
+      description: "Container monitoring down for >6 hours. Escalating to Manager."
+
+- name: Infrastructure Alerts - Tier 4
+  rules:
+  - alert: NodeDown_CTO
+    expr: up{job="node-exporter"} == 0
+    for: 3m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l4_cto
+    annotations:
+      summary: "L4 CRITICAL: Node Down for 12+ Hours"
+      description: "Host monitoring down for >12 hours. Escalating to CTO."
+  - alert: BlackboxExporterDown_CTO
+    expr: up{job="blackbox-exporter"} == 0
+    for: 3m
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l4_cto
+    annotations:
+      summary: "L4 CRITICAL: Blackbox Exporter Down for 12+ Hours"
+      description: "Application monitoring exporter unavailable for >12 hours. Escalating to CTO."
+  - alert: PrometheusDown_CTO
+    expr: up{job="prometheus"} == 0
+    for: 3m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l4_cto
+    annotations:
+      summary: "L4 CRITICAL: Prometheus Down for 12+ Hours"
+      description: "Prometheus unreachable for >12 hours. Escalating to CTO."
+  - alert: PostgreSQLExporterDown_CTO
+    expr: up{job="postgres-exporter"} == 0
+    for: 3m
+    labels:
+      severity: critical
+      team: dba
+      escalation_tier: l4_cto
+    annotations:
+      summary: "L4 CRITICAL: Postgres Exporter Down for 12+ Hours"
+      description: "Database metrics unavailable for >12 hours. Escalating to CTO."
+  - alert: CAdvisorDown_CTO
+    expr: up{job="cadvisor"} == 0
+    for: 3m
+    labels:
+      severity: critical
+      team: infra
+      escalation_tier: l4_cto
+    annotations:
+      summary: "L4 CRITICAL: cAdvisor Down for 12+ Hours"
+      description: "Container monitoring down for >12 hours. Escalating to CTO."
+
+# ==========================================
+# APPLICATION ALERTS
+# ==========================================
+- name: Application Alerts - Tier 1
+  rules:
+  - alert: BackendAPIDown
+    expr: probe_success{job="backend-api"} == 0 or absent(probe_success{job="backend-api"})
+    for: 15s
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l1_developer
+    annotations:
+      summary: "Backend API Down"
+      description: "Backend API health check failed. Backend dev notified."
+
+  - alert: InvoiceAPIDown
+    expr: probe_success{job="invoice-api"} == 0 or absent(probe_success{job="invoice-api"})
+    for: 15s
+    labels:
+      severity: critical
+      team: backend
+      escalation_tier: l1_developer
+    annotations:
+      summary: "Invoice API Down"
+      description: "Invoice API health check failed."
   - alert: HighInvoiceAPIResponseTime
     expr: probe_duration_seconds{job="invoice-api"} > 2
     for: 2m
@@ -158,202 +391,11 @@ groups:
     annotations:
       summary: "Unexpected HTTP Status"
       description: "API returned a non-200 HTTP status."
-- name: Infrastructure Alerts - Tier 2
-  rules:
-  - alert: NodeDown_Escalated
-    expr: up{job="node-exporter"} == 0
-    for: 3h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: Node Down for 3+ Hours"
-      description: "Host monitoring down for >3 hours. Escalating to Infra Lead."
-      
-  - alert: PrometheusDown_Escalated
-    expr: up{job="prometheus"} == 0
-    for: 3h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: Prometheus Down for 3+ Hours"
-      description: "Prometheus unreachable for >3 hours. Escalating to Infra Lead."
-      
-  - alert: PostgreSQLExporterDown_Escalated
-    expr: up{job="postgres-exporter"} == 0
-    for: 3h
-    labels:
-      severity: critical
-      team: dba
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: Postgres Exporter Down for 3+ Hours"
-      description: "Database metrics unavailable for >3 hours. Escalating to DBA Lead."
-      
-  - alert: CAdvisorDown_Escalated
-    expr: up{job="cadvisor"} == 0
-    for: 3h
-    labels:
-      severity: warning
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: cAdvisor Down for 3+ Hours"
-      description: "Container monitoring down for >3 hours. Escalating to Infra Lead."
-
-  - alert: HighCPUUsage_Escalated
-    expr: (100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
-    for: 15m
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: High CPU Usage"
-      description: "CPU usage above 80% for 15 minutes."
-
-  - alert: HighMemoryUsage_Escalated
-    expr: ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100) > 80
-    for: 15m
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: High Memory Usage"
-      description: "Memory utilization above 80% for 15 minutes."
-
-  - alert: HighDiskUsage_Escalated
-    expr: (100 - ((node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} * 100) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) > 85
-    for: 20m
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l2_team_lead
-    annotations:
-      summary: "ESCALATION: High Disk Usage"
-      description: "Disk usage exceeded 85% for 20 minutes."
-
-
-- name: Infrastructure Alerts - Tier 3
-  rules:
-  - alert: NodeDown_Manager
-    expr: up{job="node-exporter"} == 0
-    for: 6h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l3_manager
-    annotations:
-      summary: "L3 ESCALATION: Node Down for 6+ Hours"
-      description: "Host monitoring down for >6 hours. Escalating to Manager."
-  - alert: PrometheusDown_Manager
-    expr: up{job="prometheus"} == 0
-    for: 6h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l3_manager
-    annotations:
-      summary: "L3 ESCALATION: Prometheus Down for 6+ Hours"
-      description: "Prometheus unreachable for >6 hours. Escalating to Manager."
-  - alert: PostgreSQLExporterDown_Manager
-    expr: up{job="postgres-exporter"} == 0
-    for: 6h
-    labels:
-      severity: critical
-      team: dba
-      escalation_tier: l3_manager
-    annotations:
-      summary: "L3 ESCALATION: Postgres Exporter Down for 6+ Hours"
-      description: "Database metrics unavailable for >6 hours. Escalating to DBA Manager."
-  - alert: CAdvisorDown_Manager
-    expr: up{job="cadvisor"} == 0
-    for: 6h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l3_manager
-    annotations:
-      summary: "L3 ESCALATION: cAdvisor Down for 6+ Hours"
-      description: "Container monitoring down for >6 hours. Escalating to Manager."
-
-- name: Infrastructure Alerts - Tier 4
-  rules:
-  - alert: NodeDown_CTO
-    expr: up{job="node-exporter"} == 0
-    for: 12h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l4_cto
-    annotations:
-      summary: "L4 CRITICAL: Node Down for 12+ Hours"
-      description: "Host monitoring down for >12 hours. Escalating to CTO."
-  - alert: PrometheusDown_CTO
-    expr: up{job="prometheus"} == 0
-    for: 12h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l4_cto
-    annotations:
-      summary: "L4 CRITICAL: Prometheus Down for 12+ Hours"
-      description: "Prometheus unreachable for >12 hours. Escalating to CTO."
-  - alert: PostgreSQLExporterDown_CTO
-    expr: up{job="postgres-exporter"} == 0
-    for: 12h
-    labels:
-      severity: critical
-      team: dba
-      escalation_tier: l4_cto
-    annotations:
-      summary: "L4 CRITICAL: Postgres Exporter Down for 12+ Hours"
-      description: "Database metrics unavailable for >12 hours. Escalating to CTO."
-  - alert: CAdvisorDown_CTO
-    expr: up{job="cadvisor"} == 0
-    for: 12h
-    labels:
-      severity: critical
-      team: infra
-      escalation_tier: l4_cto
-    annotations:
-      summary: "L4 CRITICAL: cAdvisor Down for 12+ Hours"
-      description: "Container monitoring down for >12 hours. Escalating to CTO."
-
-
-- name: Application Alerts - Tier 1
-  rules:
-  - alert: BackendAPIDown
-    expr: probe_success{job="backend-api"} == 0
-    for: 30s
-    labels:
-      severity: critical
-      team: backend
-      escalation_tier: l1_developer
-    annotations:
-      summary: "Backend API Down"
-      description: "Backend API health check failed. Backend dev notified."
-
-  - alert: InvoiceAPIDown
-    expr: probe_success{job="invoice-api"} == 0
-    for: 30s
-    labels:
-      severity: critical
-      team: backend
-      escalation_tier: l1_developer
-    annotations:
-      summary: "Invoice API Down"
-      description: "Invoice API health check failed."
-
 - name: Application Alerts - Tier 2
   rules:
   - alert: BackendAPIDown_Escalated
-    expr: probe_success{job="backend-api"} == 0
-    for: 3h
+    expr: probe_success{job="backend-api"} == 0 or absent(probe_success{job="backend-api"})
+    for: 1m
     labels:
       severity: critical
       team: backend
@@ -363,8 +405,9 @@ groups:
       description: "Backend API unreachable for >3 hours. Escalating to Backend Lead."
       
   - alert: InvoiceAPIDown_Escalated
-    expr: probe_success{job="invoice-api"} == 0
-    for: 3h
+    expr:   probe_success{job="invoice-api"} == 0
+      or absent(probe_success{job="invoice-api"})
+    for: 1m
     labels:
       severity: critical
       team: backend
@@ -376,8 +419,8 @@ groups:
 - name: Application Alerts - Tier 3
   rules:
   - alert: BackendAPIDown_Manager
-    expr: probe_success{job="backend-api"} == 0
-    for: 6h
+    expr: probe_success{job="backend-api"} == 0 or absent(probe_success{job="backend-api"})
+    for: 2m
     labels:
       severity: critical
       team: backend
@@ -386,8 +429,8 @@ groups:
       summary: "L3 ESCALATION: Backend API Down for 6+ Hours"
       description: "Backend API unreachable for >6 hours. Escalating to Manager."
   - alert: InvoiceAPIDown_Manager
-    expr: probe_success{job="invoice-api"} == 0
-    for: 6h
+    expr: probe_success{job="invoice-api"} == 0 or absent(probe_success{job="invoice-api"})
+    for: 2m
     labels:
       severity: critical
       team: backend
@@ -399,8 +442,8 @@ groups:
 - name: Application Alerts - Tier 4
   rules:
   - alert: BackendAPIDown_CTO
-    expr: probe_success{job="backend-api"} == 0
-    for: 12h
+    expr: probe_success{job="backend-api"} == 0 or absent(probe_success{job="backend-api"})
+    for: 3m
     labels:
       severity: critical
       team: backend
@@ -409,8 +452,8 @@ groups:
       summary: "L4 CRITICAL: Backend API Down for 12+ Hours"
       description: "Backend API unreachable for >12 hours. Escalating to CTO."
   - alert: InvoiceAPIDown_CTO
-    expr: probe_success{job="invoice-api"} == 0
-    for: 12h
+    expr: probe_success{job="invoice-api"} == 0 or absent(probe_success{job="invoice-api"})
+    for: 3m
     labels:
       severity: critical
       team: backend
@@ -419,12 +462,14 @@ groups:
       summary: "L4 CRITICAL: Invoice API Down for 12+ Hours"
       description: "Invoice API unreachable for >12 hours. Escalating to CTO."
 
-
+# ==========================================
+# DATABASE ALERTS
+# ==========================================
 - name: Database Alerts - Tier 1
   rules:
   - alert: HighDatabaseConnections
     expr: sum(pg_stat_database_numbackends) > 20
-    for: 1m
+    for: 15s
     labels:
       severity: warning
       team: dba
@@ -432,10 +477,10 @@ groups:
     annotations:
       summary: "High Database Connections"
       description: "Too many active PostgreSQL connections. DBA notified."
-      
+    
   - alert: DatabaseDeadlocks
     expr: rate(pg_stat_database_deadlocks[5m]) > 0
-    for: 1m
+    for: 15s
     labels:
       severity: warning
       team: dba
@@ -477,7 +522,7 @@ groups:
   rules:
   - alert: HighDatabaseConnections_Escalated
     expr: sum(pg_stat_database_numbackends) > 20
-    for: 3h
+    for: 1m
     labels:
       severity: critical
       team: dba
@@ -488,7 +533,7 @@ groups:
       
   - alert: DatabaseDeadlocks_Escalated
     expr: rate(pg_stat_database_deadlocks[5m]) > 0  
-    for: 3h
+    for: 1m
     labels:
       severity: critical
       team: dba
@@ -501,7 +546,7 @@ groups:
   rules:
   - alert: HighDatabaseConnections_Manager
     expr: sum(pg_stat_database_numbackends) > 20
-    for: 6h
+    for: 2m
     labels:
       severity: critical
       team: dba
@@ -511,7 +556,7 @@ groups:
       description: "Connections critically high for >6 hours. Escalating to Manager."
   - alert: DatabaseDeadlocks_Manager
     expr: rate(pg_stat_database_deadlocks[5m]) > 0  
-    for: 6h
+    for: 2m
     labels:
       severity: critical
       team: dba
@@ -524,7 +569,7 @@ groups:
   rules:
   - alert: HighDatabaseConnections_CTO
     expr: sum(pg_stat_database_numbackends) > 20
-    for: 12h
+    for: 3m
     labels:
       severity: critical
       team: dba
@@ -534,7 +579,7 @@ groups:
       description: "Connections critically high for >12 hours. Escalating to CTO."
   - alert: DatabaseDeadlocks_CTO
     expr: rate(pg_stat_database_deadlocks[5m]) > 0  
-    for: 12h
+    for: 3m
     labels:
       severity: critical
       team: dba

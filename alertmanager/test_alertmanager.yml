@@ -7,35 +7,40 @@ global:
 
 route:
   receiver: 'default-receiver'
-  # Grouping by team ensures DB alerts and API alerts don't get batched into the same email
   group_by: ['alertname', 'job', 'team']
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 4h 
+  
+ 
+  group_wait: 10s       # Wait only 10s before sending the first batch
+  group_interval: 15s   # Wait only 15s before sending updates/new alerts in the same group
+  repeat_interval: 1m   # Default repeat for anything else
 
   routes:
+    # ==========================================
+    # ROUTING FOR BACKEND TEAM
+    # ==========================================
     - matchers:
         - team="backend"
       routes:
         - matchers:
             - escalation_tier="l1_developer"
           receiver: 'backend-dev-email'
-          repeat_interval: 1h
+          repeat_interval: 1m # Quick reminder for testing
         
         - matchers:
             - escalation_tier="l2_team_lead"
           receiver: 'backend-lead-email'
-          repeat_interval: 3h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l3_manager"
           receiver: 'backend-manager-email'
-          repeat_interval: 6h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l4_cto"
           receiver: 'backend-cto-email'
-          repeat_interval: 12h
+          repeat_interval: 1m
+
 
     - matchers:
         - team="dba"
@@ -43,45 +48,46 @@ route:
         - matchers:
             - escalation_tier="l1_developer"
           receiver: 'dba-dev-email'
-          repeat_interval: 1h
+          repeat_interval: 1m
         
         - matchers:
             - escalation_tier="l2_team_lead"
           receiver: 'dba-lead-email'
-          repeat_interval: 3h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l3_manager"
           receiver: 'dba-manager-email'
-          repeat_interval: 6h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l4_cto"
           receiver: 'dba-cto-email'
-          repeat_interval: 12h
+          repeat_interval: 1m
 
+  
     - matchers:
         - team="infra"
       routes:
         - matchers:
             - escalation_tier="l1_developer"
           receiver: 'infra-dev-email'
-          repeat_interval: 1h
+          repeat_interval: 1m
         
         - matchers:
             - escalation_tier="l2_team_lead"
           receiver: 'infra-lead-email'
-          repeat_interval: 3h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l3_manager"
           receiver: 'infra-manager-email'
-          repeat_interval: 6h
+          repeat_interval: 1m
           
         - matchers:
             - escalation_tier="l4_cto"
           receiver: 'infra-cto-email'
-          repeat_interval: 12h
+          repeat_interval: 1m
 
 receivers:
 - name: default-receiver
@@ -96,7 +102,6 @@ receivers:
 
 - name: 'backend-lead-email'
   email_configs:
-  # Sends to both Developer and Team Lead
   - to: 'flutterdevs9@gmail.com, sahil260605@gmail.com' 
     send_resolved: true
     headers:
@@ -104,7 +109,7 @@ receivers:
 
 - name: 'backend-manager-email'
   email_configs:
-  - to: 'sahilgarg@techmutant.com, flutterdevs9@gmail.com, sahil260605@gmail.com' # Replace with actual Manager email
+  - to: 'sahilgarg@techmutant.com, flutterdevs9@gmail.com, sahil260605@gmail.com' 
     send_resolved: true
     headers:
       Subject: 'L3 ESCALATION (Backend): {{ .GroupLabels.alertname }}'

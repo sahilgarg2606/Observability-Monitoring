@@ -1,0 +1,1098 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "panel", "id": "gauge", "name": "Gauge", "version": "" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "bargauge", "name": "Bar gauge", "version": "" },
+    { "type": "panel", "id": "state-timeline", "name": "State timeline", "version": "" },
+    { "type": "panel", "id": "text", "name": "Text", "version": "" }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "description": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "# 🌐 Service & Application Monitoring\nReal-time health, performance, and availability of all monitored services and APIs",
+        "reduceOptions": { "calcs": [], "fields": "", "values": false }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Backend API Status",
+      "description": "Shows the current probe success status for the Backend API. UP means the service is reachable and healthy, DOWN means it is unreachable or returning errors.",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_success{job=\"backend-api\"}",
+          "legendFormat": "Backend API",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": { "text": "DOWN", "color": "#FF4444", "index": 0 },
+                "1": { "text": "UP", "color": "#73BF69", "index": 1 }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#73BF69", "value": 1 }
+            ]
+          },
+          "color": { "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Invoice API Status",
+      "description": "Shows the current probe success status for the Invoice API. UP means the service is reachable and healthy, DOWN means it is unreachable or returning errors.",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_success{job=\"invoice-api\"}",
+          "legendFormat": "Invoice API",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": { "text": "DOWN", "color": "#FF4444", "index": 0 },
+                "1": { "text": "UP", "color": "#73BF69", "index": 1 }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#73BF69", "value": 1 }
+            ]
+          },
+          "color": { "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Backend Response Time",
+      "description": "Current response time for the Backend API probe in milliseconds. Green indicates fast response, orange is moderate latency, and red signals high latency that may impact user experience.",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_duration_seconds{job=\"backend-api\"} * 1000",
+          "legendFormat": "Backend Response",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 500 },
+              { "color": "#FF4444", "value": 2000 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Invoice Response Time",
+      "description": "Current response time for the Invoice API probe in milliseconds. Green indicates fast response, orange is moderate latency, and red signals high latency that may impact user experience.",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_duration_seconds{job=\"invoice-api\"} * 1000",
+          "legendFormat": "Invoice Response",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 500 },
+              { "color": "#FF4444", "value": 2000 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Backend HTTP Status",
+      "description": "HTTP status code returned by the Backend API probe. A 200 status code means the service is healthy, any other code indicates a potential issue.",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_status_code{job=\"backend-api\"}",
+          "legendFormat": "Backend HTTP",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "from": 200,
+                "to": 200,
+                "result": { "text": "200 Healthy", "color": "#73BF69", "index": 0 }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 201,
+                "to": 599,
+                "result": { "text": "Unhealthy", "color": "#FF4444", "index": 1 }
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#73BF69", "value": 200 }
+            ]
+          },
+          "color": { "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Invoice HTTP Status",
+      "description": "HTTP status code returned by the Invoice API probe. A 200 status code means the service is healthy, any other code indicates a potential issue.",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 2 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_status_code{job=\"invoice-api\"}",
+          "legendFormat": "Invoice HTTP",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "from": 200,
+                "to": 200,
+                "result": { "text": "200 Healthy", "color": "#73BF69", "index": 0 }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 201,
+                "to": 599,
+                "result": { "text": "Unhealthy", "color": "#FF4444", "index": 1 }
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#73BF69", "value": 200 }
+            ]
+          },
+          "color": { "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 8,
+      "type": "gauge",
+      "title": "Backend Uptime",
+      "description": "Overall uptime percentage for the Backend API over the selected time range. Calculated as the average probe success rate. 99%+ is excellent, 95-99% is acceptable, below 90% needs immediate attention.",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg_over_time(probe_success{job=\"backend-api\"}[$__range]) * 100",
+          "legendFormat": "Backend Uptime",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FF9830", "value": 90 },
+              { "color": "#FADE2A", "value": 95 },
+              { "color": "#73BF69", "value": 99 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdMarkers": true,
+        "showThresholdLabels": true,
+        "orientation": "auto",
+        "text": {}
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 9,
+      "type": "gauge",
+      "title": "Invoice Uptime",
+      "description": "Overall uptime percentage for the Invoice API over the selected time range. Calculated as the average probe success rate. 99%+ is excellent, 95-99% is acceptable, below 90% needs immediate attention.",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg_over_time(probe_success{job=\"invoice-api\"}[$__range]) * 100",
+          "legendFormat": "Invoice Uptime",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FF9830", "value": 90 },
+              { "color": "#FADE2A", "value": 95 },
+              { "color": "#73BF69", "value": 99 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdMarkers": true,
+        "showThresholdLabels": true,
+        "orientation": "auto",
+        "text": {}
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 10,
+      "type": "gauge",
+      "title": "SSL Certificate — Days Remaining",
+      "description": "Number of days until the SSL certificate for the Backend API expires. Below 30 days requires renewal planning, below 15 days is urgent, and expired certificates will cause service outages.",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "(probe_ssl_earliest_cert_expiry{job=\"backend-api\"} - time()) / 86400",
+          "legendFormat": "SSL Expiry",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "d",
+          "min": 0,
+          "max": 365,
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FF9830", "value": 15 },
+              { "color": "#FADE2A", "value": 30 },
+              { "color": "#73BF69", "value": 60 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdMarkers": true,
+        "showThresholdLabels": true,
+        "orientation": "auto",
+        "text": {}
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Active Alerts",
+      "description": "Total count of currently firing alerts across all monitored services. Zero alerts is ideal (green), 1-2 alerts is a warning (orange), 3+ alerts indicates a critical situation requiring immediate response.",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "count(ALERTS{alertstate=\"firing\"}) OR vector(0)",
+          "legendFormat": "Firing Alerts",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 1 },
+              { "color": "#FF4444", "value": 3 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 40 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 12,
+      "type": "row",
+      "title": "📊 Response Time & Latency Trends",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "API Response Time Trend",
+      "description": "Tracks the response time trend for Backend and Invoice APIs over time. A threshold line at 2000ms marks the critical latency boundary. Spikes above this line indicate performance degradation requiring investigation.",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_duration_seconds{job=\"backend-api\"} * 1000",
+          "legendFormat": "Backend API",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_duration_seconds{job=\"invoice-api\"} * 1000",
+          "legendFormat": "Invoice API",
+          "refId": "B",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF4444", "value": 2000 }
+            ]
+          },
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Response Time (ms)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "line" }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Backend API" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#5794F2", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice API" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#B877D9", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom", "showValues": "value", "calcs": ["lastNotNull", "mean", "max"] }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "HTTP Duration Phases",
+      "description": "Breaks down the HTTP request duration into individual phases (DNS lookup, connect, TLS handshake, processing, transfer) for both Backend and Invoice APIs. Helps identify which phase contributes most to latency.",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_duration_seconds{job=\"backend-api\"}",
+          "legendFormat": "Backend — {{phase}}",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_duration_seconds{job=\"invoice-api\"}",
+          "legendFormat": "Invoice — {{phase}}",
+          "refId": "B",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 80 }
+            ]
+          },
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Duration (s)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "gradientMode": "scheme",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Backend — resolve" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#5794F2", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Backend — connect" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#36A2EB", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Backend — tls" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#B877D9", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Backend — processing" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Backend — transfer" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#FADE2A", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice — resolve" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice — connect" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#FF6384", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice — tls" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#CE9178", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice — processing" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#4EC9B0", "mode": "fixed" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Invoice — transfer" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "#D4A5A5", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom", "showValues": "value", "calcs": ["lastNotNull"] }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 15,
+      "type": "row",
+      "title": "🟢 Service Availability & Uptime History",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 21 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 16,
+      "type": "state-timeline",
+      "title": "Service Availability Timeline",
+      "description": "Visual timeline showing when each service was UP (green) or DOWN (red) over the selected time range. Useful for identifying outage patterns, maintenance windows, and correlating downtime events across services.",
+      "gridPos": { "h": 7, "w": 16, "x": 0, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_success{job=\"backend-api\"}",
+          "legendFormat": "Backend API",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_success{job=\"invoice-api\"}",
+          "legendFormat": "Invoice API",
+          "refId": "B",
+          "editorMode": "code",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": { "text": "DOWN", "color": "#FF4444", "index": 0 },
+                "1": { "text": "UP", "color": "#73BF69", "index": 1 }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#73BF69", "value": 1 }
+            ]
+          },
+          "color": { "mode": "fixed" },
+          "custom": {
+            "fillOpacity": 90,
+            "lineWidth": 0,
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showValue": "never",
+        "mergeValues": true,
+        "alignValue": "center",
+        "rowHeight": 0.8,
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 17,
+      "type": "stat",
+      "title": "Uptime Summary",
+      "description": "Displays the overall uptime percentage for each monitored service over the selected time range. Values are shown to 3 decimal places for SLA precision tracking (e.g., 99.900% = three nines).",
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg_over_time(probe_success{job=\"backend-api\"}[$__range]) * 100",
+          "legendFormat": "Backend API",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "avg_over_time(probe_success{job=\"invoice-api\"}[$__range]) * 100",
+          "legendFormat": "Invoice API",
+          "refId": "B",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FF9830", "value": 95 },
+              { "color": "#73BF69", "value": 99 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "text": { "titleSize": 14, "valueSize": 36 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 18,
+      "type": "row",
+      "title": "🔍 Probe & Scrape Diagnostics",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 19,
+      "type": "bargauge",
+      "title": "Target Scrape Duration",
+      "description": "Displays the time Prometheus takes to scrape each target. Long scrape durations can indicate target-side performance issues, network latency, or overly complex metric endpoints. Values above 0.15s warrant investigation.",
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 30 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "scrape_duration_seconds",
+          "legendFormat": "{{job}} — {{instance}}",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "max": 0.5,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.15 },
+              { "color": "#FF4444", "value": 0.3 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "namePlacement": "auto",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "text": { "valueSize": 16, "titleSize": 12 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "DNS Lookup Time",
+      "description": "Time taken for DNS name resolution during the Backend API probe. High DNS lookup times can indicate DNS server issues, missing or misconfigured DNS caches, or network path problems.",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 35 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_dns_lookup_time_seconds{job=\"backend-api\"}",
+          "legendFormat": "DNS Lookup",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.1 },
+              { "color": "#FF4444", "value": 0.5 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 36 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "TCP Connect Time",
+      "description": "Time taken to establish a TCP connection to the Backend API. High connect times suggest network congestion, firewall inspection overhead, or geographic distance between the probe and the target service.",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 35 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_duration_seconds{phase=\"connect\",job=\"backend-api\"}",
+          "legendFormat": "TCP Connect",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.1 },
+              { "color": "#FF4444", "value": 0.5 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 36 }
+      },
+      "pluginVersion": "10.0.0"
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "TLS Handshake Time",
+      "description": "Time taken for the TLS/SSL handshake during the Backend API probe. Elevated TLS handshake times can indicate certificate chain validation issues, cipher negotiation problems, or OCSP stapling delays.",
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 35 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "probe_http_duration_seconds{phase=\"tls\",job=\"backend-api\"}",
+          "legendFormat": "TLS Handshake",
+          "refId": "A",
+          "editorMode": "code",
+          "range": true,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.1 },
+              { "color": "#FF4444", "value": 0.5 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "colorMode": "value",
+        "textMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "text": { "titleSize": 14, "valueSize": 36 }
+      },
+      "pluginVersion": "10.0.0"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["service", "application", "monitoring", "observability"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Service & Application Monitoring",
+  "uid": "service-app-monitoring-v2",
+  "version": 0
+}
